@@ -1,4 +1,4 @@
-package com.example.calculaterent
+package com.example.meterreader
 
 import org.junit.Test
 

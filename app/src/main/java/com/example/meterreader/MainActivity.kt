@@ -1,4 +1,4 @@
-package com.example.calculaterent
+package com.example.meterreader
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -24,7 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.calculaterent.ui.theme.CalculateRentTheme
+import com.example.meterreader.ui.theme.CalculateRentTheme
 
 data class PersonInfo(val name: String)
 

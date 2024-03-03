@@ -1,4 +1,4 @@
-package com.example.calculaterent.ui.theme
+package com.example.meterreader.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
