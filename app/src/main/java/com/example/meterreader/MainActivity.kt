@@ -1,5 +1,7 @@
 package com.example.meterreader
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,21 +26,48 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.meterreader.ui.theme.CalculateRentTheme
+import com.example.meterreader.ui.theme.MeterReaderTheme
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.TextRecognizer
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 
 data class PersonInfo(val name: String)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+        var resultText: String = processImage(recognizer)
+        println(resultText)
+
+
+//        val resultText = result.text
+
         setContent {
-            CalculateRentTheme {
+            MeterReaderTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     MessageCardRead()
                 }
             }
         }
     }
+     fun processImage(recognizer: TextRecognizer): String {
+        val bitmap: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.test)
+        val image = InputImage.fromBitmap(bitmap, 0)
+        var resultText: String = "error processing image"
+
+        val result = recognizer.process(image)
+            .addOnSuccessListener { visionText ->
+                resultText = visionText.text
+            }
+            .addOnFailureListener { e ->
+                resultText = "error processing image"
+                e.stackTrace
+            }
+         return resultText
+     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,13 +123,13 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 // @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    CalculateRentTheme {
+    MeterReaderTheme {
         Greeting("Android")
     }
 }
 
 
-/*CalculateRentTheme {
+/*MeterReaderThemeTheme {
     // A surface container using the 'background' color from the theme
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Greeting("Android")
