@@ -27,10 +27,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.meterreader.ui.theme.MeterReaderTheme
+import com.google.android.gms.tasks.Task
 import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.TextRecognizer
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 data class PersonInfo(val name: String)
 
@@ -39,9 +43,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
-        var resultText: String = processImage(recognizer)
-        println(resultText)
 
+        var resultText: String = ""
+
+        processImage(recognizer) { result ->
+            resultText = result
+            println(resultText)
+        }
 
 //        val resultText = result.text
 
@@ -53,21 +61,20 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-     fun processImage(recognizer: TextRecognizer): String {
+
+    fun processImage(recognizer: TextRecognizer, callback: (String) -> Unit) {
         val bitmap: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.test)
         val image = InputImage.fromBitmap(bitmap, 0)
-        var resultText: String = "error processing image"
 
         val result = recognizer.process(image)
             .addOnSuccessListener { visionText ->
-                resultText = visionText.text
+                callback(visionText.text)
             }
             .addOnFailureListener { e ->
-                resultText = "error processing image"
+                callback("error processing image")
                 e.stackTrace
             }
-         return resultText
-     }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
