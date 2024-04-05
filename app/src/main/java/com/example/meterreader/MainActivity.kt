@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -23,11 +24,13 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.times
 import com.example.meterreader.ui.theme.MeterReaderTheme
 import com.google.android.gms.tasks.Task
 import com.google.mlkit.vision.common.InputImage
@@ -46,7 +49,7 @@ class MainActivity : ComponentActivity() {
         val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
         processImage(recognizer) { result ->
-            person.value = PersonInfo(result)
+//            person.value = PersonInfo(result)
             println(result)
         }
 
@@ -77,26 +80,31 @@ class MainActivity : ComponentActivity() {
 // @Preview
 @Composable
 fun MessageCardRead(person: MutableState<PersonInfo>) {
-    Clause(
-        personInfo = person
-    )
+    repeat(1) {index ->
+        Clause(
+            index = index,
+            personInfo = person
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Clause(personInfo: MutableState<PersonInfo>) {
+fun Clause(index: Int, personInfo: MutableState<PersonInfo>) {
     Surface(
         shape = MaterialTheme.shapes.small,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 10.dp)
+            .padding(top = index * 64.dp)
     ) {
         Row(
             modifier = Modifier.padding(all = 8.dp),
-            Arrangement.SpaceBetween
+            Arrangement.SpaceBetween,
+//            verticalAlignment = Alignment.CenterVertically
         ){
             TextField(
-                modifier = Modifier.height(40.dp),
+                modifier = Modifier.height(40.dp).width(80.dp),
                 value = "text",
                 onValueChange = { newText -> newText + 1 })
             Image(
