@@ -21,6 +21,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
@@ -33,30 +35,25 @@ import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.TextRecognizer
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 data class PersonInfo(val name: String)
 
 class MainActivity : ComponentActivity() {
+    private var person = mutableStateOf(PersonInfo("loading"))
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
-        var resultText: String = ""
-
         processImage(recognizer) { result ->
-            resultText = result
-            println(resultText)
+            person.value = PersonInfo(result)
+            println(result)
         }
-
-//        val resultText = result.text
 
         setContent {
             MeterReaderTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    MessageCardRead()
+                    MessageCardRead(person)
                 }
             }
         }
@@ -77,9 +74,17 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// @Preview
+@Composable
+fun MessageCardRead(person: MutableState<PersonInfo>) {
+    Clause(
+        personInfo = person
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Clause(personInfo: PersonInfo) {
+fun Clause(personInfo: MutableState<PersonInfo>) {
     Surface(
         shape = MaterialTheme.shapes.small,
         modifier = Modifier
@@ -103,55 +108,8 @@ fun Clause(personInfo: PersonInfo) {
                     .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape)
             )
             Text(
-                text = personInfo.name
+                text = personInfo.value.name
             )
         }
     }
 }
-
-@Preview
-@Composable
-fun MessageCardRead() {
-    Clause(
-        personInfo = PersonInfo("Steve")
-    )
-}
-
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    var x = mutableListOf(1, 2, 3, 4, 5)
-    Text(
-        text = "Hello ${name}!",
-        modifier = modifier
-    )
-}
-
-// @Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MeterReaderTheme {
-        Greeting("Android")
-    }
-}
-
-
-/*MeterReaderThemeTheme {
-    // A surface container using the 'background' color from the theme
-    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-        Greeting("Android")
-    }
-}*/
-
-
-/*Column() {
-    Text(
-        text = personInfo.author,
-        color = MaterialTheme.colorScheme.secondary,
-        style = MaterialTheme.typography.titleSmall
-    )
-    Spacer(modifier = Modifier.height(4.dp))
-    Surface(shape = MaterialTheme.shapes.medium, shadowElevation = 1.dp) {
-        Text(text = personInfo.text, modifier = Modifier.padding(all = 4.dp), color = MaterialTheme.colorScheme.tertiary, style = MaterialTheme.typography.bodyMedium)
-    }
-}*/
